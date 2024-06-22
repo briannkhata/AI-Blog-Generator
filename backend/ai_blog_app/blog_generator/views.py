@@ -1,16 +1,39 @@
-from django.shortcuts import render
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect, render
 
 # Create your views here.
 
+
 def index(request):
-    return render(request,'index.html')
-    
+    return render(request, 'index.html')
+
+
 def user_login(request):
-    return render(request,'login.html')
+    return render(request, 'login.html')
+
 
 def user_signup(request):
-    return render(request,'signup.html')
+    if request.method == "POST":
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        repeatpassword = request.POST['repeatpassword']
+
+        if password == repeatpassword:
+            try:
+                user = User.objects.create_user(username, email, password)
+                user.save()
+                login(request, user)
+                return redirect('/')
+            except:
+                error_message = "Error Creating Account"
+                return render(request, 'signup.html', {'error_message': error_message})
+        else:
+            error_message = "Passwords do not match"
+            return render(request, 'signup.html', {'error_message': error_message})
+    return render(request, 'signup.html')
+
 
 def user_logout(request):
     pass
-    
