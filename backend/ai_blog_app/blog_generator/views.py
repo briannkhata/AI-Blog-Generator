@@ -10,6 +10,17 @@ def index(request):
 
 
 def user_login(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(request,username=username,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('/')
+        else:
+            error_message = "wrong username or password"
+            return render(request, 'login.html', {'error_message': error_message})
     return render(request, 'login.html')
 
 
@@ -36,4 +47,5 @@ def user_signup(request):
 
 
 def user_logout(request):
-    pass
+    logout(request)
+    return redirect('/')
